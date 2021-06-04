@@ -1,0 +1,47 @@
+body {
+  text-align: center;
+  font-family: "Montserrat", sans-serif;
+}
+
+.player-title {
+  display: flex;
+  justify-content: center;
+}
+.player-title h3 {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.gameboard-container {
+  margin-top: 2em;
+  display: grid;
+  width: 450px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 3px;
+  justify-content: center;
+  align-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gb-cell {
+  display: flex;
+  width: 150px;
+  height: 150px;
+  background-color: black;
+  /* border: 1px solid white; */
+  color: white;
+  font-size: 128px;
+  justify-content: center;
+  align-items: center;
+}
+.gb-cell span {
+  opacity: 1;
+  transform: ;
+}
+.gb-cell:hover {
+  cursor: pointer;
+  opacity: 0.5;
+  box-shadow: inset 1em 1em 1em red;
+}
