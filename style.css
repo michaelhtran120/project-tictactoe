@@ -32,16 +32,19 @@ body {
   background-color: black;
   /* border: 1px solid white; */
   color: white;
-  font-size: 128px;
+  font-size: 100px;
   justify-content: center;
   align-items: center;
 }
-.gb-cell span {
-  opacity: 1;
-  transform: ;
-}
+
 .gb-cell:hover {
   cursor: pointer;
-  opacity: 0.5;
-  box-shadow: inset 1em 1em 1em red;
+  opacity: 0.6;
+  box-shadow: inset 1em 1em 1em black, 0 2.8px 2.2px rgba(0, 0, 0, 0.134),
+    0 6.7px 5.3px rgba(0, 0, 0, 0.148), 0 12.5px 10px rgba(0, 0, 0, 0.16),
+    0 22.3px 17.9px rgba(0, 0, 0, 0.172), 0 41.8px 33.4px rgba(0, 0, 0, 0.186),
+    0 100px 80px rgba(0, 0, 0, 0.12);
+  width: 95%;
+  height: 95%;
+  margin: auto;
 }

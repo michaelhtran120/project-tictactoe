@@ -1,53 +1,42 @@
 "use strict";
-
-const gbCell = document.querySelectorAll(".gb-cell");
-const gameStatus = document.querySelector(".game-status");
-let gameActive = true;
-
 /////  Factory Function - Players  /////
-function playerFactory(name, symbol) {
-  const players = [];
-  const getName = () => name;
-  const getSymbol = () => symbol;
+function player(name, symbol) {
+  const getName = name;
+  const getSymbol = symbol;
   return { getName, getSymbol };
 }
 
-const Player0 = {
-  name: "Player 1",
-  symbol: "X",
-};
-
-const Player1 = {
-  name: "Player 2",
-  symbol: "O",
-};
-const players = [Player0, Player1];
-let activePlayer = players[0];
-
 /////  Module - GameBoard /////
-const Gameboard = (() => {
+const gameBoard = (() => {
+  const gameBoardContainer = document.querySelector(".gameboard-container");
+  const gameStatus = document.querySelector(".game-status");
+
+  const player1 = player(`${prompt("Enter player 1 name", "Player 1")}`, "X");
+  const player2 = player(`${prompt("Enter player 2 name", "Player 2")}`, "O");
+
+  let gameActive = true;
+
   const board = ["", "", "", "", "", "", "", "", ""];
-  const resetBtn = document.querySelector(".game-reset");
 
-  // Reset function
-  resetBtn.addEventListener("click", (e) => {
-    e.preventDefault;
-    Gameboard.board = ["", "", "", "", "", "", "", "", ""];
-    displaySymbols();
-    activePlayer = players[0];
-    gameActive = true;
-    gbCell.forEach((cell) => {
-      cell.style.backgroundColor = "";
-    });
-  });
+  gameStatus.textContent = `${player1.getName} begins: ${player1.getSymbol}`;
+  // Populate tic-tac-toe grid
+  for (let i = 0; i < 9; i++) {
+    const div = document.createElement("div");
+    div.classList.add("gb-cell");
+    div.setAttribute("data-cell", i);
+    gameBoardContainer.appendChild(div);
+  }
 
-  return { board };
+  return { board, gameStatus, player1, player2, gameActive };
 })();
 
-/////  Game Logic  /////
-const GameRules = (() => {
-  //   const gbCell = document.querySelectorAll(".gb-cell");
+const gbCell = document.querySelectorAll(".gb-cell");
 
+/////  Game Logic  /////
+const gameRules = (() => {
+  const resetBtn = document.querySelector(".game-reset");
+  const players = [gameBoard.player1, gameBoard.player2];
+  let activePlayer = players[0];
   ///// Counting X and O marker function
   const countMarkers = (arr, val) =>
     arr.reduce((a, v) => (v === val ? a + 1 : a), 0);
@@ -56,26 +45,26 @@ const GameRules = (() => {
   gbCell.forEach((cell) =>
     cell.addEventListener("click", function () {
       /// Function to enter selection into Gameboard.board array
-      if (gameActive === true) {
+      if (gameBoard.gameActive === true) {
         if (
-          Gameboard.board[`${cell.getAttribute("data-cell")}`] === "X" ||
-          Gameboard.board[`${cell.getAttribute("data-cell")}`] === "O"
+          gameBoard.board[`${cell.getAttribute("data-cell")}`] === "X" ||
+          gameBoard.board[`${cell.getAttribute("data-cell")}`] === "O"
         ) {
-          //do nothing
+          alert("Spot has been taken");
         } else {
-          Gameboard.board[`${cell.getAttribute("data-cell")}`] =
-            activePlayer.symbol;
+          gameBoard.board[`${cell.getAttribute("data-cell")}`] =
+            activePlayer.getSymbol;
         }
         ///// Logic to determine activePlayer
         if (
-          countMarkers(Gameboard.board, "X") ===
-          countMarkers(Gameboard.board, "O")
+          countMarkers(gameBoard.board, "X") ===
+          countMarkers(gameBoard.board, "O")
         ) {
           activePlayer = players[0];
-          gameStatus.textContent = `Player 1's turn: 'X'`;
+          gameBoard.gameStatus.textContent = `${players[0].getName}'s turn: ${players[0].getSymbol}`;
         } else {
           activePlayer = players[1];
-          gameStatus.textContent = `Player 2's turn: 'O'`;
+          gameBoard.gameStatus.textContent = `${players[1].getName}'s turn: ${players[1].getSymbol}`;
         }
         displaySymbols();
         checkWinner();
@@ -99,9 +88,9 @@ const GameRules = (() => {
 
     for (let i = 0; i <= 7; i++) {
       const winCondition = winningConditions[i];
-      let a = Gameboard.board[winCondition[0]];
-      let b = Gameboard.board[winCondition[1]];
-      let c = Gameboard.board[winCondition[2]];
+      let a = gameBoard.board[winCondition[0]];
+      let b = gameBoard.board[winCondition[1]];
+      let c = gameBoard.board[winCondition[2]];
       if (a === "" || b === "" || c === "") {
         continue;
       }
@@ -115,36 +104,48 @@ const GameRules = (() => {
     }
     if (roundWon) {
       if (activePlayer === players[1]) {
-        console.log(`${players[0].name} is the winner`);
-        gameStatus.textContent = `${players[0].name} has won`;
-        gameActive = false;
+        gameBoard.gameStatus.textContent = `${players[0].getName} has won!`;
+        gameBoard.gameActive = false;
         return;
       } else {
-        console.log(`${players[1].name} is the winner`);
-        gameStatus.textContent = `${players[1].name} has won`;
-        gameActive = false;
+        gameBoard.gameStatus.textContent = `${players[1].getName} has won!`;
+        gameBoard.gameActive = false;
         return;
       }
     }
     // Game Draw Logic
-    if (!Gameboard.board.includes("")) {
+    if (!gameBoard.board.includes("")) {
       console.log("draw");
-      gameStatus.textContent = `Game Over - DRAW`;
+      gameBoard.gameStatus.textContent = `Game Over - DRAW!!!`;
       gbCell.forEach((cell) => {
         cell.style.backgroundColor = "grey";
       });
-      gameActive = false;
+      gameBoard.gameActive = false;
       return;
     }
   }
+  function displaySymbols() {
+    document.querySelectorAll(".gb-cell").forEach((cell) => {
+      cell.innerHTML = `<span>${
+        gameBoard.board[cell.getAttribute("data-cell")]
+      }</span>`;
+    });
+  }
+  // Reset function
+  resetBtn.addEventListener("click", (e) => {
+    e.preventDefault;
+    gameBoard.board = ["", "", "", "", "", "", "", "", ""];
+    displaySymbols();
+    activePlayer = gameRules.players[0];
+    gameBoard.gameActive = true;
+    gbCell.forEach((cell) => {
+      cell.style.backgroundColor = "";
+    });
+    gameBoard.gameStatus.textContent = `${players[0].getName} begins: ${players[0].getSymbol}`;
+    console.log(gameRules.players);
+    console.log(gameRules.activePlayer.getSymbol);
+  });
 
   // return //
+  return { activePlayer, players, displaySymbols };
 })();
-
-function displaySymbols() {
-  document.querySelectorAll(".gb-cell").forEach((cell) => {
-    cell.innerHTML = `<span>${
-      Gameboard.board[cell.getAttribute("data-cell")]
-    }</span>`;
-  });
-}
